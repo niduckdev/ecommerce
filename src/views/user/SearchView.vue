@@ -4,6 +4,6 @@ import UserLayout from '@/layouts/UserLayout.vue'
 
 <template>
     <UserLayout>
-        content data
+        Search View
     </UserLayout>
 </template>

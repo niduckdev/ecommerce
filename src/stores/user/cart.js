@@ -2,22 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useCartStore = defineStore('cart', {
     state: () => ({
-        items: [{
-            name: 'test',
-            imageUrl: 'https://fastly.picsum.photos/id/849/200/200.jpg?hmac=LwsdGn2endKvoLY10FPqtfqKYCVMbPEp5J6S_tUN1Yg',
-            quantity: 3,
-            about: 'testt',
-            status: 'open',
-            price: 100, 
-          },
-          {
-            name: 'test123',
-            imageUrl: 'https://fastly.picsum.photos/id/849/200/200.jpg?hmac=LwsdGn2endKvoLY10FPqtfqKYCVMbPEp5J6S_tUN1Yg',
-            quantity: 3,
-            about: 'testt',
-            status: 'open',
-            price: 100, 
-          }]
+        items: []
     }),
     getters : {
         summaryQuantity (state) {
@@ -32,14 +17,36 @@ export const useCartStore = defineStore('cart', {
         }
     },
     actions: {
+        loadCart () {
+            const previousCart = localStorage.getItem('cart-data')
+            if (previousCart) {
+                this.items = JSON.parse(previousCart)
+            }
+        },
         addToCart (productData) {
-            this.items.push(productData)
+
+            const findProductIndex = this.items.findIndex(item => {
+                return item.name === productData.name
+            })
+
+            // findProductIndex เป็น -1 ; หาชื่อไม่เจอ add ใหม่เลย
+            if (findProductIndex < 0) {
+                productData.quantity = 1
+                this.items.push(productData)
+            } else {
+                this.updateQuantity(findProductIndex, this.items[findProductIndex].quantity+1)
+            }
+
+            
+            localStorage.setItem('cart-data', JSON.stringify(this.items))
         },
         updateQuantity (index, newQuantity) {
             this.items[index].quantity = newQuantity
+            localStorage.setItem('cart-data', JSON.stringify(this.items))
         },
         removeItemInCart (index) {
             this.items.splice(index, 1)
+            localStorage.setItem('cart-data', JSON.stringify(this.items))
         }
     }
 })
